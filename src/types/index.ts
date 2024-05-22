@@ -26,6 +26,7 @@ export interface Size {
 
 export interface CommonStyle {
     fill: string
+    fillPattern: boolean
     stroke: string
     strokeWidth: number
 }

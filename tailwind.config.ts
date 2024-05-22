@@ -23,6 +23,9 @@ module.exports = {
                 virgil: ["Virgil"],
                 monseratt: ["Montserrat"]
             },
+            backgroundImage: {
+                "hatch-pattern": "repeating-linear-gradient(-60deg, #FFF 0, #FFF 2px, transparent 1px, transparent 5px)"
+            },
             colors: {
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",

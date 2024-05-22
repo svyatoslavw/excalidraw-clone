@@ -1,16 +1,16 @@
-import Konva from "konva"
 import { KonvaEventObject } from "konva/lib/Node"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Layer, Rect, Stage, Transformer } from "react-konva"
-import ShapeOptions from "./components/ShapeOptions"
+import { OptionsBar } from "./components/OptionsBar"
 import Shapes from "./components/Shapes"
 import { ToolBar } from "./components/ToolBar"
 import { useMouseArea } from "./hooks/useMouseArea"
 import { useScale } from "./hooks/useScale"
 import { useTool } from "./hooks/useTool"
-import { useTransformer } from "./hooks/useTransformer"
+import { useTransform } from "./hooks/useTransform"
 import { SelectionBox, isShapeInSelection } from "./lib/utils"
 import { Shape, Tool } from "./types"
+
 export interface ShapeStyle {
     fill: string
     stroke: string
@@ -18,22 +18,29 @@ export interface ShapeStyle {
     fontSize: number
     cornerRadius: number
     text?: string
+    dash: [number, number]
     fontFamily?: string
+    fillPattern: boolean
 }
+
 function App() {
     const [shapes, setShapes] = useState<Shape[]>([])
     console.log("@shapes", shapes)
 
     const [defaultStyle, setDefaultStyle] = useState<ShapeStyle>({
+        fontFamily: "Virgil",
+        fontSize: 54,
         fill: "transparent",
         stroke: "white",
         strokeWidth: 3,
-        fontSize: 54,
         cornerRadius: 10,
-        fontFamily: "Virgil"
+        fillPattern: false,
+        dash: [0, 0]
     })
 
     const { tool, setTool } = useTool()
+    const { onClick, onTransformEnd, transformRef } = useTransform({ tool, shapes, setShapes })
+    const { onWheel, stagePos, stageScale } = useScale()
 
     const createShape = (shape: Shape) => {
         setShapes((prev) => [...prev, shape])
@@ -49,13 +56,12 @@ function App() {
             })
         )
     }
-    const transformerRef = useRef<Konva.Transformer>(null)
 
     const unselectShapes = () => {
         setShapes((p) => p.map((shape) => ({ ...shape, selected: false })))
-        transformerRef?.current?.nodes([])
+        transformRef?.current?.nodes([])
     }
-    useEffect(unselectShapes, [tool])
+    useEffect(unselectShapes, [tool, transformRef])
 
     const shapeDragEnd = (e: KonvaEventObject<MouseEvent>) => {
         const shapeId = e.target.attrs.id
@@ -67,7 +73,6 @@ function App() {
         setShapes((prev) => prev.map((shape) => ({ ...shape, selected: isShapeInSelection(shape, selectionBox) })))
     }
 
-    const { onWheel, stagePos, stageScale } = useScale()
     const { selectedArea, layerPreviewRef, ...onMouseHandlers } = useMouseArea({
         tool,
         style: defaultStyle,
@@ -76,72 +81,17 @@ function App() {
         selectShapesInArea,
         unselectShapes
     })
-    const { layerRef, stageRef, transformerRef: groupRef } = useTransformer({ shapes })
-
-    function onClick(e: KonvaEventObject<MouseEvent>) {
-        if (tool !== Tool.POINTER && !transformerRef) return
-        const target = e.currentTarget
-        transformerRef.current?.nodes([target])
-    }
 
     const activeShapes = useMemo(() => shapes.filter((shape) => shape.selected), [shapes])
-
-    const handleTransformEnd = (e: KonvaEventObject<Event>) => {
-        const nodes = transformerRef.current?.nodes()
-        if (!nodes) return
-
-        const updatedShapes = shapes.map((shape: Shape) => {
-            const node = nodes.find((n) => n.id() === shape.id)
-            if (node) {
-                const scaleX = node.scaleX()
-                const scaleY = node.scaleY()
-
-                node.scaleX(1)
-                node.scaleY(1)
-
-                return {
-                    ...shape,
-                    x: node.x(),
-                    y: node.y(),
-                    width: Math.max(node.width() * scaleX),
-                    height: Math.max(node.height() * scaleY)
-                }
-            }
-            return shape
-        })
-        setShapes(updatedShapes)
-    }
-
-    // const handleTransform = (e: KonvaEventObject<Event>) => {
-    //     const nodes = transformerRef.current?.nodes()
-    //     if (!nodes) return
-
-    //     setShapes((prev) =>
-    //         prev.map((shape) => {
-    //             const node = nodes.find((n) => n.id() === shape.id)
-    //             if (node) {
-    //                 return {
-    //                     ...shape,
-    //                     x: node.x(),
-    //                     y: node.y(),
-    //                     width: node.width() * node.scaleX(),
-    //                     height: node.height() * node.scaleY(),
-    //                     strokeWidth: shape.strokeWidth
-    //                 }
-    //             }
-    //             return shape
-    //         })
-    //     )
-    // }
 
     return (
         <main className="relative w-full bg-zinc-900">
             <ToolBar activeTool={tool} onChange={(tool: Tool) => setTool(tool)} />
-            <ShapeOptions
+            <OptionsBar
                 style={defaultStyle}
                 deleteShapes={() => {
                     setShapes((p) => p.filter((shape) => !shape.selected))
-                    transformerRef?.current?.nodes([])
+                    transformRef?.current?.nodes([])
                 }}
                 onApplyStyles={(style) => {
                     setDefaultStyle((p) => ({ ...p, ...style }))
@@ -150,7 +100,6 @@ function App() {
                 activeShapes={activeShapes}
             />
             <Stage
-                ref={stageRef}
                 draggable={tool === Tool.GRAB}
                 style={{ cursor: tool === Tool.GRAB ? "grab" : "default" }}
                 onWheel={onWheel}
@@ -160,11 +109,10 @@ function App() {
                 width={window.innerWidth}
                 height={window.innerHeight}
             >
-                <Layer ref={layerRef}>
-                    <Shapes onTransformEnd={handleTransformEnd} onClick={onClick} onDragEnd={shapeDragEnd} shapes={shapes} tool={tool} />
+                <Layer>
+                    <Shapes onTransformEnd={onTransformEnd} onClick={onClick} onDragEnd={shapeDragEnd} shapes={shapes} tool={tool} />
                     <Transformer
                         boundBoxFunc={(oldBox, newBox) => {
-                            // limit resize
                             if (Math.abs(newBox.width) < 5 || Math.abs(newBox.height) < 5) {
                                 return oldBox
                             }
@@ -181,7 +129,7 @@ function App() {
                         anchorStroke="#6b21a8"
                         anchorStrokeWidth={2}
                         anchorCornerRadius={2}
-                        ref={transformerRef}
+                        ref={transformRef}
                     />
                 </Layer>
                 <Layer ref={layerPreviewRef}></Layer>

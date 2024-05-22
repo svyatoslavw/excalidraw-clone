@@ -101,6 +101,7 @@ export const useMouseArea = ({ tool, createShape, selectShape, selectShapesInAre
                 id: shapeId,
                 type: ShapeType.LINE,
                 fill: "transparent",
+                fillPattern: false,
                 stroke: "white",
                 strokeWidth: 2,
                 points: [pos.x, pos.y],
@@ -168,7 +169,7 @@ export const useMouseArea = ({ tool, createShape, selectShape, selectShapesInAre
         layerPreviewRef.current?.batchDraw()
     }
 
-    const onMouseUp = (e: KonvaEventObject<MouseEvent>) => {
+    const onMouseUp = () => {
         mouseDownRef.current = false
         shapeDragRef.current = false
         if (tool !== Tool.POINTER && tool !== Tool.GRAB) {
