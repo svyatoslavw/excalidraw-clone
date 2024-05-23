@@ -1,30 +1,97 @@
-# React + TypeScript + Vite
+<div align="center">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/chrome/chrome-original.svg" alt="logo" width="100" height="100" />
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+   <h1>Excalidraw Clone</h1>
+  
+  <p>
+  (React.js, Vite, Konva.js)
+  </p>
+  
+  <span>
+  Excalidraw-Clone is a virtual collaborative whiteboard tool that lets you easily sketch diagrams that have a hand-drawn feel to them.
+  </span>
+  <!-- <a href="https://pc-builder-v1.vercel.app/">check demo</a> -->
+</div>
 
-Currently, two official plugins are available:
+<table align="center">
+    <tr>
+        <td>
+<a href="#"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="Google" width="40" height="40" /></a>
+        </td>
+                                <td>
+<a href="#"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="" width="40" height="40" /></a>
+        </td>
+                                <td>
+<a href="#"><img src="https://konvajs.org/android-chrome-192x192.png" alt="" width="40" height="40" /></a>
+        </td>
+                                        <td>
+<a href="#"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg" alt="" width="40" height="40" /></a>
+        </td>
+    </tr>
+</table>
 
--   [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
--   [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## :notebook_with_decorative_cover: Table of Contents
 
-## Expanding the ESLint configuration
+-   [About the Project](#star2-about-the-project)
+    -   [Screenshots](#camera-screenshots)
+    -   [Technologies Stack](#space_invader-tech-stack)
+-   [Getting Started](#toolbox-getting-started)
+    -   [Environment Variables](#key-environment-variables)
+    -   [Installation](#gear-installation)
+    -   [Run Locally](#running-run-locally)
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### :camera: Screenshots
 
--   Configure the top-level `parserOptions` property like this:
+<div align="center">
+  <a href="#"><img src="https://github.com/svyatoslavw/excalidraw-clone/blob/main/public/screen.png" alt="screenshot1" /></a><br>
+</div>
 
-```js
-export default {
-    // other rules...
-    parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-        project: ["./tsconfig.json", "./tsconfig.node.json"],
-        tsconfigRootDir: __dirname
-    }
-}
+### :space_invader: Tech Stack
+
+<details>
+  <summary>Client</summary>
+  <ul>
+    <li><a href="https://react.dev/">React.js</a></li>
+    <li><a href="https://konvajs.org/index.html">Konva.js</a></li>
+    <li><a href="https://ui.shadcn.com/docs">Shadcn UI</a></li>
+    <li><a href="https://tailwindcss.com/">TailwindCSS</a></li>
+  </ul>
+</details>
+
+<br />
+
+## :toolbox: Getting Started
+
+### :key: Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+<!-- `APP_URL =` -->
+
+### :gear: Installation
+
+Clone the project
+
+```
+git clone https://github.com/svyatoslavw/excalidraw-clone.git
 ```
 
--   Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
--   Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
--   Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+```
+cd excalidraw-clone
+```
+
+### :running: Run Locally
+
+Install dependencies
+
+```bash
+  npm install
+  # or
+  yarn dev
+  # or
+  pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `src/main.tsx`. The page auto-updates as you edit the file.
